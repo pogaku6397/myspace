@@ -1,0 +1,106 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-configmap
+{{- include "common.labels" . | indent 2 }}
+
+data:
+  myvalue: "Hello World"
+  sversion: {{ .Chart.Version }}
+  appVersion: {{ .Chart.AppVersion }}
+  applicationType: {{ .Chart.Type }}
+  chartdescription : {{ .Chart.Description }} 
+  sdrink: {{ squote .Values.favDrink }}    #Generates the Quote
+
+  sdrink1: {{ .Values.favDrink }}
+  sdrink2: {{ quote .Values.favDrink }}    #Generates the Quote
+  sdrink3: {{ squote .Values.favDrink }}    #Generates the Quote
+  sdrink4: {{ title .Values.favDrink }}    #Makes the first letter word Capital
+  sdrink5: {{ quote .Values.favDrink }}    #Generates the quote
+  sdrink6: {{  .Values.favDrink | quote | title | trim | title}}  # We can apply multiple here using pipes
+  sdrink7: {{  .Values.favDrink | quote | upper }} #Converts to upper case
+  sdrink8: {{  print "My selected drink is " .Values.favDrink | repeat 3 }} #repeats for 3 times
+  sdrink9: {{  substr 0 5 .Values.favDrink }}  # returns the first 5 characters
+  sdrink10: {{  nospace .Values.favDrink }} # removes the spaces
+  sdrink11: {{  trunc 5 .Values.favDrink }} #truncates the first 5 characters
+  sdrink12: {{  trunc -5 .Values.favDrink }}  #truncates the last 5 characters
+  sdrink13: {{  abbrev 6 .Values.favDrink }}  # abbreviates adds 3...
+  sdrink14: {{  .Values.favDrink | initials | upper }}  # Given multiple words, take the first letter of each word and combine. Diplays them in upper
+ # sdrink15: {{  .Values.favDrink | contains "sudh"}} #Test to see if one string is contained inside of another
+  sdrink16: {{  .Values.favDrink | indent 4 }}  # Applies the 4 indents or spaces
+  sdrink17: {{  .Values.favDrink | snakecase | shuffle }}  #Convert string from camelCase and shuffles the text
+
+
+{{- if .Values.movie.name.isitgood  }}
+  feedback: "good"
+{{- else }}
+  feedback: "not good"
+{{- end }}  
+
+{{- if .Values.breakfast.morning.review }}
+  review: "Good"
+{{- else }}
+  review: "breakfast not good"
+{{- end }}
+
+#helm variables
+{{- $varName := .Release.Name }}    #//Second way of handling the variables
+  containerName: {{ .Values.containerName }}
+{{- with .Values.image }}
+  sudheer: {{ .name }}
+  vna: {{ .tag }}
+  replicas: {{ $varName }}      # //just call them with the $ when theyare in the With
+  containerName: {{ $.Values.containerName }}  # $ - helps to get the gloal variable value
+{{- end }}
+
+  myplaces: |-
+{{- range $key,$val := .Values.myplaces }}
+      {{ $key }}: {{ $val }}
+{{- end }}
+
+  myplaces: |-   #this is called as multiline string. https://www.baeldung.com/yaml-multi-line
+{{- range .Values.myplaces }}
+      - {{ . | title | quote }}
+{{- end }}
+
+  mydrinks: |-
+{{- range $key,$val := .Values.mydrinks }}
+    {{ $key }}: {{ $val }}
+{{- end }}    
+
+#**Practice only
+  daysofweek: |-
+{{- range $key, $value := .Values.WeekDays }}
+    {{ $key }}: {{ $value }}
+{{- end }}
+
+{{- $movie_name := .Values.mymovie }}
+{{- with .Values }} 
+  mytext: {{ .myvalue }}
+  fav_movie: {{ $movie_name }}
+{{- end }}
+
+{{- $movie := .Values.mymovie }}
+{{- with .Values }}
+  mytext: {{ .mymovie }}
+  newmovie: {{ $movie }}
+{{- end }}
+
+  fruits: |-
+{{- range $day,$name := .Values.Fruits }}
+  {{ $day }}: {{ $name }}
+{{- end }}
+
+{{ $day := .Values.day }}
+
+{{- with .Values }}
+  today: {{ .month }}
+  today: {{ $day }}
+{{- end }}
+
+{{- $gender := .Values.gender }}
+{{- with .Values.Year.month }}
+  veena: {{ .week }}
+  newgender: {{ $gender }}
+{{- end }}
+

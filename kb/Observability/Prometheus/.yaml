@@ -1,0 +1,32 @@
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dashboards-ingress
+  annotations:
+    kubernetes.io/ingress.class: "alb"
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-southeast-1:028791545937:certificate/425b7d3a-070d-46ec-afb5-9fef9ab56d24
+    alb.ingress.kubernetes.io/target-type: ip
+spec:
+  rules:
+  - host: "prom.spogaku.ot-xecm.com"
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: prometheus-server
+            port:
+              number: 80
+  - host: "graf.spogaku.ot-xecm.com"
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: grafana
+            port:
+              number: 80

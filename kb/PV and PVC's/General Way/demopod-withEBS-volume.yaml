@@ -1,0 +1,38 @@
+# Testing by mounting the EBS colume in POD when the pod and volume are in the same availability region
+#create a nginx pod 
+
+apiVersion: v1
+kind: Pod
+metadata: 
+  name: nginx
+  labels:
+    name: nginx
+    author: sudheer
+spec:
+  containers:
+  - name: nginx    
+    image: nginx:1.14.2
+    ports:
+    - containerPort: 80
+    volumeMounts:          # we are saying where the data has to be mounted in the container
+    - name: ebs-volume
+      mountPath: /data
+  nodeSelector:         # We are explictly mentioning in which node our pod should be deployed within the cluster.
+      kubernetes.io/hostname: ip-192-168-87-146.ap-southeast-1.compute.internal
+  volumes:              # passing the volume information available in the cloud
+    - name : ebs-volume
+      awsElasticBlockStore:
+        volumeID: vol-096dff80ba0d7f2fc
+        fsType: ext4                        
+
+
+#***************************************************************************************************************************************
+# Create with out kubernetes and check for the data persiatnace.
+# just comment out the node selector -> redeploy and check for the error.
+
+#   nodeSelector:         # We are explictly mentioning in which node our pod should be deployed within the cluster.
+#       kubernetes.io/hostname: ip-192-168-87-146.ap-southeast-1.compute.internal
+
+# Output: You will get error as it may get into any node and that may not be available in ythe same zoen where volume is created.
+#***************************************************************************************************************************************
+

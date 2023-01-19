@@ -1,0 +1,65 @@
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: nginx
+  name: nginx-deploy-main
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      run: nginx-main
+  template:
+    metadata:
+      labels:
+        run: nginx-main
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+---        
+
+# Service file        
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    run: nginx
+  name: app1-service
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    run: nginx-main
+
+
+---
+#Ingress rules creation for all the above
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:             
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  name: nginx-main
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - testing.ot-xecm.com
+      secretName: demo-tls-secret
+  rules:
+  - host: testing.ot-xecm.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: app1-service
+            port:
+              number: 80
+               

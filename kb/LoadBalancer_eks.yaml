@@ -1,0 +1,28 @@
+
+#Create a nginx pod:
+echo "apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+  labels:
+        app.kubernetes.io/name: MyApp
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.14.2
+    ports:
+    - containerPort: 80" | kubectl apply -f –
+---
+#Create a service:
+echo "apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+spec:
+  selector:
+    app.kubernetes.io/name: MyApp
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer" | kubectl apply -f - check for the pods:

@@ -1,0 +1,55 @@
+#create a nginx pod fopr conig maps
+apiVersion: v1
+kind: Pod
+metadata: 
+  name: nginx
+spec:
+  containers:
+  - name: nginx    
+    image: artifactory.otxlab.net/dockerhub/nginx
+    ports:
+      - containerPort: 80
+ # Creating using volume mounts-----------------------------------------------
+    volumeMounts:
+    - name: foo-volume
+      mountPath: "/opt/foo"
+      
+  volumes:
+    - name: foo-volume
+      configMap:
+        name: game-demo
+        #Another scenario in this by adding the below lines
+        items:
+        - key: "game.properties"
+          path: "veena/game.properties"
+        - key: "user-interface.properties"
+          path: "sudheer/user-interface.properties"
+# Creating using volume mounts ends here-----------------------------------------------        
+
+
+#Creating using env-----------------------------------------------
+
+# apiVersion: v1
+# kind: Pod
+# metadata: 
+#   name: nginx
+# spec:
+#   containers:
+#   - name: nginx    
+#     image: artifactory.otxlab.net/dockerhub/nginx
+#     ports:
+#       - containerPort: 80
+#     env:
+#         # Define the environment variable
+#       - name: PLAYER_INITIAL_LIVES # Notice that the case is different here
+#         valueFrom:
+#           configMapKeyRef:
+#             name: game-demo           # The ConfigMap this value comes from.
+#             key: player_initial_lives # The key to fetch.
+#       - name: UI_PROPERTIES_FILE_NAME
+#         valueFrom:
+#           configMapKeyRef:
+#             name: game-demo
+#             key: ui_properties_file_name
+
+  #Creating using env  ends here-----------------------------------------------

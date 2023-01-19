@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: subchartconfigmapmycharts
+data:
+  todaysdrink: {{ .Values.favDrink }}
+  myday: {{ .Values.global.day }}

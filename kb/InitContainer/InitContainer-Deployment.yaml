@@ -1,0 +1,36 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: nginx
+  name: nginx-deploy-blue  #//Deployment name
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      run: nginx-blue     #//Used for search the pod labels used by deployment
+  template:
+    metadata:
+      labels:
+        run: nginx-blue   #//Actual Pod labels
+    spec:
+      volumes:
+      - name: webdata  #name should be the same in Volume and volume mounts
+        emptyDir: {}  # empty data . this gets started when the pod starts
+      initContainers:
+      - name: web-content
+        image: busybox
+        volumeMounts:
+        - name: webdata
+          mountPath: "/webdata"  #//Location for init container
+        command: ["/bin/sh", "-c", 'echo "<h1>I am <font color=blue>BLUE</font></h1>" > /webdata/index.html']
+      containers:
+      - image: nginx
+        name: nginx
+        volumeMounts:
+        - name: webdata #name should be the same in Volume and volume mounts
+          mountPath: "/usr/share/nginx/html"  #//location for main container
+
+
+#kc expose deploy nginx-deploy-blue --name app1-service --port 80 

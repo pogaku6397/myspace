@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: toyamldemo-configmap
+{{- include "common.labels" . | indent 2 }}
+data: 
+
+{{- (.Files.Glob "config/config2.yaml").AsConfig | nindent 2}}    #As Config function that returns file bodies as a YAML map.
+  test.yaml: |-
+{{ toYaml .Values.banner | indent 4 }}        #Convert a YAML string to an object.
+
+  settings.yaml: |-
+{{ toYaml .Values.settings | indent 4 }} 
+
+{{- $person := .Files.Get "config/fromYamlconfigmap.yaml" | fromYaml }} 	# Files.Get is a function for getting a file by name 
+  greeting: |-
+    Hi, my name is {{ $person.name }} and I am {{ $person.age }} years old.
+    My hobbies are {{ range $person.hobbies }}{{ . }} {{ end }}.  
+
+    {{- $person := .Files.Get "config/persons.json" | fromJson }}
+  greeting1: |-
+    Hi, my name is {{ $person.name }} and I am {{ $person.age }} years old.
+    My hobbies are {{ range $person.hobbies }}{{ . }} {{ end }}.  
+  
+
+#tpl function
+# The tpl function allows developers to evaluate strings as templates inside a template.
+# This is useful to pass a template string as a value to a chart or render external configuration files. 
+# template
+  tpltemplate: |-
+{{ tpl (.Files.Get "config/tpldemo.conf") . | indent 4 }}

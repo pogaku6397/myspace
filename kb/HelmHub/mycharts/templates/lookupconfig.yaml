@@ -1,0 +1,10 @@
+{{- $test := lookup "v1" "Configmap" "sudheer" "lookup-configmap" -}}
+{{- if not $test }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: lookup-configmap
+data:
+  name: sudheer
+
+{{- end }}  

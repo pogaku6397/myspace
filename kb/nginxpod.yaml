@@ -1,0 +1,154 @@
+#create a nginx pod 
+
+# apiVersion: v1
+# kind: Pod
+# metadata: 
+#   name: nginx
+#   labels:
+#     name: nginx
+#     author: sudheer
+# spec:
+#   containers:
+#   - name: nginx    
+#     image: artifactory.otxlab.net/dockerhub/nginx
+#     ports:
+#     - containerPort: 80
+
+---    
+#==============================create a data base==========================================================  
+
+# apiVersion: v1
+# kind: Pod
+# metadata:
+#   name: mysql-pod
+#   labels:
+#     author: sudheer
+#     type: database
+# spec:
+#   containers:
+#     - name: sql
+#       image: artifactory.otxlab.net/dockerhub/mysql
+#       env:
+#         - name: MYSQL_ROOT_PASSWORD
+#           value: sudheer
+# ---          
+# #=====================================Jenkins===================================================  
+# apiVersion: v1
+# kind: Pod
+# metadata:
+#   name: jenkins-pod
+#   labels:
+#    author: sudheer
+#    podname: myJenkins
+#    type: CI-CD
+# spec:
+#   containers:
+#     - name: myjenkins
+#       image: artifactory.otxlab.net/dockerhub/jenkins/jenkins
+#       ports:
+#        - containerPort: 8080
+#          hostPort: 8080
+
+
+          
+# #=====================================Deployments===================================================  
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: nginx
+#   labels:
+#    author: sudheer
+#    type: C-CD
+# spec:
+#   replicas: 4
+#   selector:
+#     matchLabels:
+#       app: nginx
+#   template:
+#     metadata: 
+#       labels:
+#         app: nginx
+#     spec:
+#       containers:
+#        - name: nginx    
+#          image: artifactory.otxlab.net/dockerhub/nginx
+
+
+
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: nginx-pod-sudheer
+#   labels:
+#     author: sudheer
+#     app: nginx
+#     type: CI-CD
+# spec:
+#   replicas: 4
+#   selector: 
+#     matchLabels:
+#       app: nginx
+#   template:
+#     metadata:
+#       labels:
+#        app: nginx
+#     spec:
+#      containers:
+#       - name:  nginx
+#         image: artifactory.otxlab.net/dockerhub/nginx
+# ################################Working code#####################
+
+# apiVersion: apps/v1
+# kind: ReplicaSet
+# metadata:
+#   name: nginx-pod-sudheer
+#   labels:
+#     author: sudheer
+#     app: nginx
+#     type: CI-CD
+# spec:
+#   replicas: 4
+#   selector: 
+#     matchLabels:
+#       app: sudheer-nginx  # should be same as labels
+#   template:
+#     metadata:
+#       labels:
+#        app: sudheer-nginx # should be same as labels
+#     spec:
+#      containers:
+#       - name:  nginx   # Can be seen in the desribe
+#         image: artifactory.otxlab.net/dockerhub/nginx
+
+      # - name:  nginx2 # Can be seen in the desribe
+      #   image: artifactory.otxlab.net/dockerhub/nginx
+
+      # - name:  bmaddi # Can be seen in the desribe
+      #   image: artifactory.otxlab.net/dockerhub/nginx
+#=============================================================================================        
+
+#create a nginx pod fopr conig maps
+
+apiVersion: v1
+kind: Pod
+metadata: 
+  name: nginx
+spec:
+  containers:
+  - name: nginx    
+    image: artifactory.otxlab.net/dockerhub/nginx
+    ports:
+    - containerPort: 80
+     env:
+        # Define the environment variable
+      - name: PLAYER_INITIAL_LIVES # Notice that the case is different here
+        valueFrom:
+          configMapKeyRef:
+            name: game-demo           # The ConfigMap this value comes from.
+            key: player_initial_lives # The key to fetch.
+      - name: UI_PROPERTIES_FILE_NAME
+        valueFrom:
+          configMapKeyRef:
+            name: game-demo
+            key: ui_properties_file_name
+

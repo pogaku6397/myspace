@@ -1,0 +1,27 @@
+# Testing by mounting the EBS colume in POD when the pod and volume are in the same availability region
+#create a nginx pod 
+
+apiVersion: v1
+kind: Pod
+metadata: 
+  name: nginx
+  labels:
+    name: nginx
+    author: sudheer
+spec:
+  containers:
+  - name: nginx    
+    image: nginx:1.14.2
+    ports:
+    - containerPort: 80
+    volumeMounts:          # we are saying where the data has to be mounted in the container
+    - name: ebs-volume
+      mountPath: /data
+  volumes:              # passing the volume information available in the cloud
+    - name : ebs-volume
+      persistentVolumeClaim: 
+        claimName: test-pvc
+        
+
+
+

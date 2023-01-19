@@ -1,0 +1,156 @@
+Reference URL: https://devopscube.com/create-self-signed-certificates-openssl/
+This program creates a SSL as it is defined in the pciture in the cite.
+
+Create Certificate Authority
+=================================
+
+Step 1: 
+Let’s create a directory named openssl to save all the generated keys & certificates.
+
+mkdir openssl && cd openssl
+
+Step 2:
+Execute the following openssl command to create the rootCA.keyand rootCA.crt. Replace demo.mlopshub.com with your domain name or IP address.
+
+openssl req -x509 \
+            -sha256 -days 356 \
+            -nodes \
+            -newkey rsa:2048 \
+            -subj "/CN=testing.ot-xecm.com/C=US/L=San Fransisco" \
+            -keyout rootCA.key -out rootCA.crt 
+
+Output: We will get the rootCA certificate            
+
+Create Self-Signed Certificates using OpenSSL
+=================================================
+Step 1:
+1. Create the Server Private Key
+openssl genrsa -out server.key 2048            
+
+Step 2: create a config file
+cat > csr.conf 
+[ req ]
+default_bits = 2048
+prompt = no
+default_md = sha256
+req_extensions = req_ext
+distinguished_name = dn
+
+[ dn ]
+C = US
+ST = California
+L = San Fransisco
+O = MLopsHub
+OU = MlopsHub Dev
+CN = testing.ot-xecm.com
+
+[ req_ext ]
+subjectAltName = @alt_names
+
+[ alt_names ]
+DNS.1 = testing.ot-xecm.com
+DNS.2 = sudheetest.ot-xecm.com
+IP.1 = 192.168.1.5
+IP.2 = 192.168.1.6
+
+
+
+Step 3: Generate Certificate Signing Request (CSR) Using Server Private Key
+openssl req -new -key server.key -out server.csr -config csr.conf
+
+Step 4. Create a external file
+cat > cert.conf
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = testing.ot-xecm.com
+DNS.2 = sudheetest.ot-xecm.com
+
+
+Step 5: Generate SSL certificate With self signed CA
+openssl x509 -req \
+    -in server.csr \
+    -CA rootCA.crt -CAkey rootCA.key \
+    -CAcreateserial -out server.crt \
+    -days 365 \
+    -sha256 -extfile cert.conf
+
+
+
+--------------------------------------------------------------
+Now, create a deployment, Service and Ingress 
+make sure to map the created secrets
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: nginx
+  name: nginx-deploy-main
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      run: nginx-main
+  template:
+    metadata:
+      labels:
+        run: nginx-main
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+---        
+
+# Service file        
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    run: nginx
+  name: app1-service
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    run: nginx-main
+
+
+---
+#Ingress rules creation for all the above
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:             
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  name: nginx-main
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - testing.ot-xecm.com
+      secretName: demo-tls-secret
+  rules:
+  - host: testing.ot-xecm.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: app1-service
+            port:
+              number: 80
+
+notes:
+-----------
+1. Host the URL and check for the site. // It shoukd have the not secure.
+2. Next step -> Connect to SSH and import the rootCA certificate to local machine.
+3. open the browser settings -> Security -> Managed certificates -> Trusted Root certificates -> Click on Import -> Browse and supply the rootCA file.
+4. It make take few moments and hit the site url agaon. Now it should show the lock icon.

@@ -1,0 +1,78 @@
+favDrink: parentchart pepsi
+
+image:
+  name: nginx
+  tag: latest
+
+banner:
+  movie: kgf
+  movie2: kgf2
+
+settings:
+  set1: ok
+  set2: notok
+
+replicas: 3  
+containerName: testnginx
+
+movie:  
+  name: 
+    isitgood: true
+
+breakfast:
+  morning:
+    review: false
+
+myplaces:
+  - Srisailam
+  - Tirupathi
+  - Saleshwaram
+
+mydrinks:
+  fav: thumsup
+  secondfav: sprite
+  thirdfav: maaza
+  worstdrink: pepsi
+
+subcharts:
+  favDrink: Bhuvan
+
+#**Practice only
+WeekDays:
+  - Sunday
+  - Monday
+  - Tuesday
+  - Wednesday
+  - Thursday
+  - Friday
+  - Saturday
+
+myvalue: Srujan
+mymovie: Gharshana
+
+Fruits:
+  - a
+  - b
+  - c
+  - d
+  - e
+  - f
+  - g
+
+month: January
+
+day: monday
+
+Year:
+  month:
+    week: one
+
+gender: male    
+
+#tpl values
+firstName: Peter
+lastName: Parker
+
+
+global:
+  day: today

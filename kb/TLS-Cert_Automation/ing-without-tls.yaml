@@ -1,0 +1,22 @@
+# _________________________________________________________________________
+# Ingress without TLS initially
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rancher-demo
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: testing.ot-xecm.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service: 
+            name: rancher-demo
+            port:
+              number: 80
+# _________________________________________________________________________

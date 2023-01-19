@@ -1,0 +1,6 @@
+dependencies:
+- name: mysql
+  repository: https://charts.bitnami.com/bitnami
+  version: 9.3.4
+digest: sha256:0ac766a18672af9efeb5296dcc6fda3585293aad5c61e2c3cb191cedb50bc9e6
+generated: "2023-01-06T09:42:06.343795728+05:30"

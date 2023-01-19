@@ -1,0 +1,42 @@
+echo "apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: nginx
+  name: nginx-deploy-main
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      run: nginx-main
+  template:
+    metadata:
+      labels:
+        run: nginx-main
+    spec:
+      containers:
+      - image: nginx
+        name: nginx" | kubectl apply -f - 
+
+
+        #Imeprative way to upa service
+        kc expose deploy  nginx-deploy-main --name sample-nginx --port 80
+
+# Ingress Rule
+echo "apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-wildcard-host
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: "demo.ot-xecm.com"
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: sample-nginx  #points to created service
+            port:
+              number: 80" | kc apply -f -
